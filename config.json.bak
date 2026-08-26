@@ -1,0 +1,67 @@
+{
+  "_petunjuk": "Semua pengaturan bot ada di file ini. Ubah lalu SIMPAN -- bot membaca ulang otomatis tanpa perlu restart.",
+
+  "bot": {
+    "nomorBot": "6285173329868",
+    "namaBot": "AutoPost Bot",
+    "timezone": "Asia/Jakarta"
+  },
+
+  "jadwal": {
+    "aktif": true,
+    "intervalMenit": 30,
+    "kirimSaatStart": true,
+    "delaySebelumKirimPertamaDetik": 25,
+    "jedaAntarGrupDetik": 8,
+    "jitterDetik": 5,
+    "jamAktif": {
+      "aktif": false,
+      "mulai": "07:00",
+      "selesai": "22:00"
+    },
+    "hariAktif": [0, 1, 2, 3, 4, 5, 6]
+  },
+
+  "grupTujuan": [
+    {
+      "aktif": true,
+      "nama": "Grup Jualan A",
+      "id": ""
+    },
+    {
+      "aktif": false,
+      "nama": "Grup Jualan B",
+      "id": "120363000000000000@g.us"
+    }
+  ],
+
+  "pesan": {
+    "mode": "urut",
+    "acakUrutanGambar": false,
+    "daftar": [
+      //{
+        //"aktif": true,
+        //"teks": "Halo *{{namaGrup}}*! 👋\n\nUpdate promo hari ini {{tanggal}} pukul {{jam}}.\nSilakan cek katalog terbaru kami ya.\n\n_Pesan otomatis dari {{namaBot}}_",
+       // "gambar": ""
+      //},
+      {
+        "aktif": true,
+        "teks": "📢 *WTS*\n\n-DigitalOcean 3 & 10 Droplet\n-Gmail Fresh\n\n-BOT ORDER DO & GMAIL\nt.me/fzidobot\n\nBOT INSTALLER RDP\n(ubah vps do ke rdp windows)\nt.me/fzidobot",
+        "gambar": "media/promo1.jpg"
+      },
+      {
+        "aktif": false,
+        "teks": "Contoh kirim gambar dari internet.",
+        "gambar": "https://picsum.photos/800/600"
+      }
+    ]
+  },
+
+  "opsi": {
+    "tulisGroupsJson": true,
+    "isiOtomatisIdGrupDariNama": true,
+    "tandaiSudahDibaca": false,
+    "tampilkanSedangMengetik": true,
+    "hentikanJikaSemuaGrupGagal": false
+  }
+}

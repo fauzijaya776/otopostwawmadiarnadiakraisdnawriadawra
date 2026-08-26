@@ -1,0 +1,173 @@
+{
+  "_petunjuk": "Semua pengaturan bot ada di file ini. Ubah lalu SIMPAN -- bot membaca ulang otomatis tanpa perlu restart.",
+
+  "bot": {
+    "nomorBot": "6285173329868",
+    "namaBot": "AutoPost Bot",
+    "timezone": "Asia/Jakarta"
+  },
+
+  "jadwal": {
+    "aktif": true,
+    "intervalMenit": 60,
+    "kirimSaatStart": true,
+    "delaySebelumKirimPertamaDetik": 25,
+    "jedaAntarGrupDetik": 45,
+    "jitterDetik": 30,
+    "jamAktif": {
+      "aktif": false,
+      "mulai": "07:00",
+      "selesai": "22:00"
+    },
+    "hariAktif": [0, 1, 2, 3, 4, 5, 6]
+  },
+
+  // ====== GRUP TUJUAN ======
+  // Semua grup di bawah ini BISA dikirimi bot (grup yang terkunci admin sudah disaring).
+  // Ubah "aktif": false -> true HANYA pada grup yang mau kamu kirimi.
+  // Perbarui daftar ini kapan saja dengan: npm run groups  lalu  npm run groups:snippet
+  "grupTujuan": [
+    // 𝗣𝘂𝘁𝗿𝗮𝗠𝗮𝗿𝗸𝗲𝘁 | 𝗔𝗽𝗽𝘀 & 𝗧𝗿𝗶𝗮𝗹
+    { "aktif": true,  "nama": "𝗣𝘂𝘁𝗿𝗮𝗠𝗮𝗿𝗸𝗲𝘁 | 𝗔𝗽𝗽𝘀 & 𝗧𝗿𝗶𝗮𝗹", "id": "120363090384059273@g.us" },
+    // 𝐒𝐔𝐑𝐀𝐁𝐀𝐘𝐀 𝐄𝐓𝐇𝐈𝐂𝐀𝐋 𝐇𝐀𝐂𝐊𝐈𝐍𝐆 𝐂𝐑𝐄𝐖{𝐒𝐄𝐇𝐂}👨🏻‍💻
+    { "aktif": true,  "nama": "𝐒𝐔𝐑𝐀𝐁𝐀𝐘𝐀 𝐄𝐓𝐇𝐈𝐂𝐀𝐋 𝐇𝐀𝐂𝐊𝐈𝐍𝐆 𝐂𝐑𝐄𝐖{𝐒𝐄𝐇𝐂}👨🏻‍💻", "id": "120363285700601637@g.us" },
+    // 𝐀𝐍𝐎𝐍𝐘𝐌𝐎𝐔𝐒 𝚰𝐍𝐃𝐎𝐍𝐄𝐒𝚰𝐀
+    { "aktif": true,  "nama": "𝐀𝐍𝐎𝐍𝐘𝐌𝐎𝐔𝐒 𝚰𝐍𝐃𝐎𝐍𝐄𝐒𝚰𝐀", "id": "120363282780924702@g.us" },
+    // Rumah sakit heker{RSH} 🏥🎭
+    { "aktif": false, "nama": "Rumah sakit heker{RSH} 🏥🎭", "id": "120363046958717076@g.us" },
+    // DS ~ Free Share/Promotion
+    { "aktif": true,  "nama": "DS ~ Free Share/Promotion", "id": "120363120454785917@g.us" },
+    // 𝖀𝕹𝕯𝕰𝕽𝕯𝕺𝕲 𝕮𝖄𝕭𝕰𝕽 𝕿𝕰𝕬𝕸 {𝐔𝐂𝐓}🐺
+    { "aktif": false, "nama": "𝖀𝕹𝕯𝕰𝕽𝕯𝕺𝕲 𝕮𝖄𝕭𝕰𝕽 𝕿𝕰𝕬𝕸 {𝐔𝐂𝐓}🐺", "id": "120363158726598122@g.us" },
+    // CLOUD, VCC & PREMIUM APP
+    { "aktif": true,  "nama": "CLOUD, VCC & PREMIUM APP", "id": "120363344723412005@g.us" },
+    // FZISTORE CLOUD & DIGITAL MARKET
+    { "aktif": true,  "nama": "FZISTORE CLOUD & DIGITAL MARKET", "id": "120363276184914712@g.us" },
+    // 𝙈𝙖𝙨𝙮𝙖𝙧𝙖𝙠𝙖𝙩 𝙋𝙚𝙣𝙜𝙜𝙖𝙧𝙖𝙥 🔥
+    { "aktif": true,  "nama": "𝙈𝙖𝙨𝙮𝙖𝙧𝙖𝙠𝙖𝙩 𝙋𝙚𝙣𝙜𝙜𝙖𝙧𝙖𝙥 🔥", "id": "120363425014525772@g.us" },
+    // Fajar Store ~ Cloud Products
+    { "aktif": true,  "nama": "Fajar Store ~ Cloud Products", "id": "120363054997440843@g.us" },
+    // JOB FREELANCE ONLINE
+    { "aktif": true,  "nama": "JOB FREELANCE ONLINE", "id": "120363042722958352@g.us" },
+    // ASTRO TIME ~ ECOSYSTEM
+    { "aktif": true,  "nama": "ASTRO TIME ~ ECOSYSTEM", "id": "120363047225355470@g.us" },
+    // Group Free Share | Promotion
+    { "aktif": true,  "nama": "Group Free Share | Promotion", "id": "120363209884300532@g.us" },
+    // JASA JOB GARAPAN EVENT REFERRAL APLIKASI 💸
+    { "aktif": true,  "nama": "JASA JOB GARAPAN EVENT REFERRAL APLIKASI 💸", "id": "6281282456758-1608462752@g.us" },
+    // CLOUD RESEARCH - Toko Online & Rekber
+    { "aktif": true,  "nama": "CLOUD RESEARCH - Toko Online & Rekber", "id": "6282143926830-1628213911@g.us" },
+    // JB¹ || ALL GAME RINZZ STORE
+    { "aktif": true,  "nama": "JB¹ || ALL GAME RINZZ STORE", "id": "120363391071123022@g.us" },
+    // MARKET KYC INDONESIA
+    { "aktif": true,  "nama": "MARKET KYC INDONESIA", "id": "120363334407385141@g.us" },
+    // GNI RANS TEAM ~ ECOSYSTEM
+    { "aktif": true,  "nama": "GNI RANS TEAM ~ ECOSYSTEM", "id": "120363184784904519@g.us" },
+    // PT. AMS DIGITAL STORE
+    { "aktif": true,  "nama": "PT. AMS DIGITAL STORE", "id": "120363162384070048@g.us" },
+    // HT - HostingTerbaik.web.id
+    { "aktif": true,  "nama": "HT - HostingTerbaik.web.id", "id": "120363172097847138@g.us" },
+    // P1wzpediaaa - Bebas Promosi
+    { "aktif": true,  "nama": "P1wzpediaaa - Bebas Promosi", "id": "120363235734572216@g.us" },
+    // Riazra Team ~ VCC
+    { "aktif": true,  "nama": "Riazra Team ~ VCC", "id": "120363042056071252@g.us" },
+    // ALBUM AXA INTI
+    { "aktif": false, "nama": "ALBUM AXA INTI", "id": "120363405951654313@g.us" },
+    // JUAL BELI RDP/VPS #WB
+    { "aktif": false, "nama": "JUAL BELI RDP/VPS #WB", "id": "120363024211842790@g.us" },
+    // NAKA VCC
+    { "aktif": false, "nama": "NAKA VCC", "id": "120363131875871992@g.us" },
+    // Rekber 175k ✅
+    { "aktif": false, "nama": "Rekber 175k ✅", "id": "120363398783383987@g.us" },
+    // Rekber Ocean
+    { "aktif": false, "nama": "Rekber Ocean", "id": "120363419977300847@g.us" },
+    // Alibaba
+    { "aktif": false, "nama": "Alibaba", "id": "120363383155908313@g.us" },
+    // Escrow
+    { "aktif": false, "nama": "Escrow", "id": "120363403135439246@g.us" },
+    // Escrow linode
+    { "aktif": false, "nama": "Escrow linode", "id": "120363371126201131@g.us" },
+    // Escrow25$ with sendy
+    { "aktif": false, "nama": "Escrow25$ with sendy", "id": "120363425490339500@g.us" },
+    // Google cloud
+    { "aktif": false, "nama": "Google cloud", "id": "120363415043774109@g.us" },
+    // P
+    { "aktif": false, "nama": "P", "id": "120363401549140651@g.us" },
+    // Rekber ghs
+    { "aktif": false, "nama": "Rekber ghs", "id": "120363420598639145@g.us" },
+    // WISE ACCOUNT SELL & BUY
+    { "aktif": false, "nama": "WISE ACCOUNT SELL & BUY", "id": "120363402030296310@g.us" },
+    // Wise Deal With Fzi
+    { "aktif": false, "nama": "Wise Deal With Fzi", "id": "120363421753103251@g.us" },
+    // ШΞ ΛЯΞ ФЛΞ 👨🏻‍💻
+    { "aktif": false, "nama": "ШΞ ΛЯΞ ФЛΞ 👨🏻‍💻", "id": "120363316991904495@g.us" },
+    // ░ーᴊᴍᴘ ᴘʀᴏᴊᴇᴄᴛ ᴏꜰꜰɪᴄɪᴀʟ ー░
+    { "aktif": false, "nama": "░ーᴊᴍᴘ ᴘʀᴏᴊᴇᴄᴛ ᴏꜰꜰɪᴄɪᴀʟ ー░", "id": "120363400058470132@g.us" },
+    // Backlinks Builder 🤠🤠
+    { "aktif": false, "nama": "Backlinks Builder 🤠🤠", "id": "120363421130082621@g.us" },
+    // escrow
+    { "aktif": false, "nama": "escrow", "id": "120363403013593405@g.us" },
+    // Escrow
+    { "aktif": false, "nama": "Escrow", "id": "120363401308818124@g.us" },
+    // Hetzner deal
+    { "aktif": false, "nama": "Hetzner deal", "id": "120363404387285134@g.us" },
+    // INDIAN SMM MARKET NEW UPDATE
+    { "aktif": false, "nama": "INDIAN SMM MARKET NEW UPDATE", "id": "120363170129151720@g.us" },
+    // Wise 2 110k
+    { "aktif": false, "nama": "Wise 2 110k", "id": "120363397493115319@g.us" },
+    // .
+    { "aktif": false, "nama": ".", "id": "120363386831609789@g.us" },
+    // (tanpa nama)
+    { "aktif": false, "nama": "(tanpa nama)", "id": "120363372367161669@g.us" },
+    // AGywSinjNE
+    { "aktif": false, "nama": "AGywSinjNE", "id": "120363409213653772@g.us" },
+    // DS Digital - Sharing, Promotion, Rekber
+    { "aktif": false, "nama": "DS Digital - Sharing, Promotion, Rekber", "id": "120363328660907954@g.us" },
+    // Escrow 6$ fzi
+    { "aktif": false, "nama": "Escrow 6$ fzi", "id": "120363368780755292@g.us" },
+    // Group rekber 85k
+    { "aktif": false, "nama": "Group rekber 85k", "id": "120363419439933536@g.us" },
+    // Reckber
+    { "aktif": false, "nama": "Reckber", "id": "120363420061015636@g.us" },
+    // Reckber
+    { "aktif": false, "nama": "Reckber", "id": "120363420309843357@g.us" },
+    // Reckber 10$ fzi
+    { "aktif": false, "nama": "Reckber 10$ fzi", "id": "120363400990782294@g.us" },
+    // Rekber 60k
+    { "aktif": false, "nama": "Rekber 60k", "id": "120363418745088797@g.us" },
+    // rekber do
+    { "aktif": false, "nama": "rekber do", "id": "120363379812124153@g.us" },
+    // Rkbr
+    { "aktif": false, "nama": "Rkbr", "id": "120363369152947336@g.us" }
+  ],
+
+  "pesan": {
+    "mode": "urut",
+    "acakUrutanGambar": false,
+    "daftar": [
+      //{
+        //"aktif": true,
+        //"teks": "Halo *{{namaGrup}}*! 👋\n\nUpdate promo hari ini {{tanggal}} pukul {{jam}}.\nSilakan cek katalog terbaru kami ya.\n\n_Pesan otomatis dari {{namaBot}}_",
+       // "gambar": ""
+      //},
+      {
+        "aktif": true,
+        "teks": "📢 *WTS*\n\n-DigitalOcean 3 & 10 Droplet\n-Gmail Fresh\n\n-BOT ORDER DO & GMAIL\nt.me/fzidobot\n\nBOT INSTALLER RDP\n(ubah vps do ke rdp windows)\nt.me/fzidobot",
+        "gambar": "media/promo1.jpg"
+      },
+      {
+        "aktif": false,
+        "teks": "Contoh kirim gambar dari internet.",
+        "gambar": "https://picsum.photos/800/600"
+      }
+    ]
+  },
+
+  "opsi": {
+    "tulisGroupsJson": true,
+    "isiOtomatisIdGrupDariNama": true,
+    "tandaiSudahDibaca": false,
+    "tampilkanSedangMengetik": true,
+    "hentikanJikaSemuaGrupGagal": false
+  }
+}

@@ -1,0 +1,15 @@
+Taruh gambar yang mau diposting di folder ini.
+
+Lalu tulis nama filenya di config.json, bagian "pesan" > "daftar" > "gambar".
+Contoh:
+    "gambar": "media/promo1.jpg"
+atau cukup:
+    "gambar": "promo1.jpg"
+
+Bisa juga pakai link internet:
+    "gambar": "https://contoh.com/banner.jpg"
+
+Kalau tidak mau kirim gambar, kosongkan saja:
+    "gambar": ""
+
+Format yang aman: .jpg / .jpeg / .png (maksimal sekitar 5 MB).

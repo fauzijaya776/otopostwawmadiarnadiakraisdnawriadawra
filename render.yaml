@@ -1,0 +1,32 @@
+# ============================================================
+#  Blueprint Render untuk WhatsApp Auto Post Bot
+#  Cara pakai: push repo ini ke GitHub -> Render > New > Blueprint
+# ============================================================
+services:
+  - type: web
+    name: wa-autopost-bot
+    runtime: node
+    plan: free              # ganti ke "starter" kalau mau tanpa sleep
+    region: singapore       # paling dekat Indonesia
+    branch: main
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      # Node 22 LTS. Boleh diganti 20 / 24 -- kode ini support Node >= 20.
+      - key: NODE_VERSION
+        value: 22.11.0
+      - key: NODE_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: info
+      - key: KEEPALIVE
+        value: "true"
+      # Isi manual di dashboard Render (jangan ditaruh di file ini)
+      - key: WA_PHONE_NUMBER
+        sync: false
+      - key: SESSION_B64
+        sync: false
+      - key: ADMIN_TOKEN
+        sync: false

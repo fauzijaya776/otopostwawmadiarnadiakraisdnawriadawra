@@ -1,0 +1,29 @@
+{
+  "name": "wa-autopost-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bot auto post WhatsApp (teks + gambar) ke banyak grup dengan interval yang diatur lewat file config. Login pakai pairing code, siap deploy di Render.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js",
+    "groups": "node scripts/list-groups.js",
+    "session:export": "node scripts/session-export.js",
+    "session:reset": "node scripts/session-reset.js",
+    "check": "node scripts/check.js",
+    "debug": "node scripts/debug.js",
+    "groups:offline": "node scripts/list-groups.js --offline",
+    "groups:snippet": "node scripts/list-groups.js --snippet"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "baileys": "7.0.0-rc14",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
