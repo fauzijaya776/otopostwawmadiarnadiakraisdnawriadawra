@@ -169,4 +169,29 @@ function resolveTargets(cfg, grup) {
   return unik;
 }
 
-module.exports = { simpanDanTampilkan, resolveTargets, getTerakhir };
+/**
+ * Cadangan resolveTargets: dipakai kalau daftar grup gagal diambil dari
+ * WhatsApp (mis. groupFetchAllParticipating error/timeout). Kita tetap bisa
+ * mengirim langsung ke grup yang ID-nya sudah tertulis di config.json, tanpa
+ * perlu metadata grup. botAdmin/hanyaAdminBisaKirim dibuat "tidak diketahui"
+ * supaya pengiriman tidak diblokir oleh pengecekan admin.
+ */
+function targetsDariConfig(cfg) {
+  const unik = [];
+  const seen = new Set();
+  for (const t of Array.isArray(cfg.grupTujuan) ? cfg.grupTujuan : []) {
+    if (!t.aktif || !t.id || seen.has(t.id)) continue;
+    seen.add(t.id);
+    unik.push({
+      id: t.id,
+      nama: t.nama || t.id,
+      cocok: null,
+      sumber: 'config-cadangan',
+      botAdmin: null,
+      hanyaAdminBisaKirim: false,
+    });
+  }
+  return unik;
+}
+
+module.exports = { simpanDanTampilkan, resolveTargets, targetsDariConfig, getTerakhir };

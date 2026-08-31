@@ -6,6 +6,20 @@ const { PATHS } = require('./paths');
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
+/**
+ * Bungkus sebuah promise dengan batas waktu. Kalau melewati `ms`, promise
+ * ditolak dengan pesan `label` supaya satu operasi yang macet (mis. ambil
+ * daftar grup atau kirim pesan yang menggantung) tidak membekukan seluruh
+ * siklus auto post. Timer selalu dibersihkan agar tidak menahan proses hidup.
+ */
+function withTimeout(promise, ms, label = 'operasi timeout') {
+  let to;
+  const batas = new Promise((_, reject) => {
+    to = setTimeout(() => reject(new Error(`${label} (> ${Math.round(ms / 1000)} detik)`)), ms);
+  });
+  return Promise.race([Promise.resolve(promise).finally(() => clearTimeout(to)), batas]);
+}
+
 /** Angka acak antara min..max (inklusif). */
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -95,6 +109,7 @@ const ringkas = (s, n = 60) =>
 
 module.exports = {
   delay,
+  withTimeout,
   randInt,
   nowParts,
   renderTemplate,

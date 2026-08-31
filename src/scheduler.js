@@ -2,9 +2,21 @@
 
 const { logger, banner } = require('./logger');
 const { bacaState, tulisState } = require('./state');
-const { simpanDanTampilkan, resolveTargets } = require('./groups');
-const { delay, randInt, nowParts, renderTemplate, dalamJadwalAktif, resolveMedia, ringkas } =
-  require('./utils');
+const { simpanDanTampilkan, resolveTargets, targetsDariConfig } = require('./groups');
+const {
+  delay,
+  withTimeout,
+  randInt,
+  nowParts,
+  renderTemplate,
+  dalamJadwalAktif,
+  resolveMedia,
+  ringkas,
+} = require('./utils');
+
+// Batas waktu supaya satu operasi macet tidak membekukan siklus.
+const TIMEOUT_AMBIL_GRUP_MS = 60_000;
+const TIMEOUT_KIRIM_MS = 120_000;
 
 class Scheduler {
   /**
@@ -45,6 +57,14 @@ class Scheduler {
     this.aktif = true;
     if (!cfg.jadwal.aktif) {
       logger.warn('⏸️  jadwal.aktif = false — auto post tidak dijalankan.');
+      return;
+    }
+    // start() dipanggil ulang setiap event "ready" (termasuk tiap reconnect).
+    // Kalau siklus sudah dijadwalkan atau sedang berjalan, JANGAN dijadwalkan
+    // ulang — kalau di-reset, timer kirim pertama (mis. 25 detik) mundur terus
+    // tiap reconnect dan pengiriman tidak pernah benar-benar terjadi.
+    if (this.timer || this.berjalan) {
+      logger.info('▶️  Auto post sudah aktif — jadwal yang berjalan dipertahankan (tidak di-reset).');
       return;
     }
     const detikPertama = cfg.jadwal.kirimSaatStart
@@ -119,7 +139,10 @@ class Scheduler {
     try {
       await this.jalankanSekali(false);
     } catch (e) {
-      logger.error({ err: e.message }, '❌ Error saat siklus auto post');
+      logger.error(
+        { err: e.message, kode: e.statusCode || e?.output?.statusCode, stack: e.stack },
+        '❌ Error saat siklus auto post'
+      );
     } finally {
       if (this.aktif) {
         const cfg = this.getConfig();
@@ -169,13 +192,34 @@ class Scheduler {
 
     this.berjalan = true;
     const mulai = Date.now();
-    const t = nowParts(cfg.bot.timezone);
 
     try {
-      // 1) Segarkan daftar grup (sekaligus auto-isi ID dari nama).
-      const semuaGrup = await this.wa.ambilSemuaGrup();
-      simpanDanTampilkan(semuaGrup, { tulisFile: cfg.opsi.tulisGroupsJson, tampilkan: false });
-      const targets = resolveTargets(cfg, semuaGrup);
+      const t = nowParts(cfg.bot.timezone);
+
+      // 1) Segarkan daftar grup (sekaligus auto-isi ID dari nama). Kalau langkah
+      //    ini gagal/timeout, siklus TIDAK dibatalkan — kita jatuh ke ID grup
+      //    yang sudah tertulis di config.json supaya pesan tetap terkirim.
+      let semuaGrup = null;
+      try {
+        semuaGrup = await withTimeout(
+          this.wa.ambilSemuaGrup(),
+          TIMEOUT_AMBIL_GRUP_MS,
+          'ambil daftar grup timeout'
+        );
+      } catch (e) {
+        logger.error(
+          { err: e.message, kode: e.statusCode || e?.output?.statusCode },
+          '⚠️  Gagal mengambil daftar grup — memakai ID grup dari config.json sebagai cadangan'
+        );
+      }
+
+      let targets;
+      if (semuaGrup) {
+        simpanDanTampilkan(semuaGrup, { tulisFile: cfg.opsi.tulisGroupsJson, tampilkan: false });
+        targets = resolveTargets(cfg, semuaGrup);
+      } else {
+        targets = targetsDariConfig(cfg);
+      }
 
       if (targets.length === 0) {
         logger.warn('⚠️  Tidak ada grup tujuan yang valid. Cek "grupTujuan" di config.json.');
@@ -219,10 +263,14 @@ class Scheduler {
           if (g.hanyaAdminBisaKirim && g.botAdmin === false) {
             throw new Error('grup hanya mengizinkan admin yang mengirim pesan');
           }
-          const res = await this.wa.kirim(
-            g.id,
-            { teks, media },
-            { tampilkanSedangMengetik: cfg.opsi.tampilkanSedangMengetik }
+          const res = await withTimeout(
+            this.wa.kirim(
+              g.id,
+              { teks, media },
+              { tampilkanSedangMengetik: cfg.opsi.tampilkanSedangMengetik }
+            ),
+            TIMEOUT_KIRIM_MS,
+            'kirim pesan timeout'
           );
           sukses++;
           detail.push({ grup: g.nama, id: g.id, status: 'ok', messageId: res?.key?.id || null });
