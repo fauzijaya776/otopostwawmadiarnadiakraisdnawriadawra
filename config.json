@@ -2,7 +2,7 @@
   "_petunjuk": "Semua pengaturan bot ada di file ini. Ubah lalu SIMPAN -- bot membaca ulang otomatis tanpa perlu restart.",
 
   "bot": {
-    "nomorBot": "6285173329868",
+    "nomorBot": "6285173317723",
     "namaBot": "AutoPost Bot",
     "timezone": "Asia/Jakarta"
   },
@@ -152,7 +152,7 @@
       //},
       {
         "aktif": true,
-        "teks": "📢 *WTS*\n\n-DigitalOcean 3 & 10 Droplet\n-Gmail Fresh\n\n-BOT ORDER DO & GMAIL\nt.me/fzidobot\n\nBOT INSTALLER RDP\n(ubah vps do ke rdp windows)\nt.me/fzidobot",
+        "teks": "📢 *WTS*\n\n-DigitalOcean 3 & 10 Droplet\n-Gmail Fresh\n\n-BOT ORDER DO & GMAIL\nt.me/fzicloudbot\n\nBOT INSTALLER RDP\n(ubah vps do ke rdp windows)\nt.me/fzicloudbot",
         "gambar": "media/promo1.jpg"
       },
       {
@@ -169,5 +169,81 @@
     "tandaiSudahDibaca": false,
     "tampilkanSedangMengetik": true,
     "hentikanJikaSemuaGrupGagal": false
+  },
+
+  // ====== AUTO INVITE ANGGOTA KE GRUP ======
+  // Dipakai oleh: npm run invite   (BUKAN oleh auto-post biasa)
+  // PENTING:
+  //   - Nomor bot HARUS admin di setiap grup tujuan.
+  //   - Satu grup WA maksimal ~1024 anggota. Kalau nomor lebih banyak,
+  //     isi beberapa ID grup -> bot mengisi grup pertama sampai penuh,
+  //     lalu lanjut ke grup berikutnya.
+  //   - Nomor yang privasinya "hanya kontak" TIDAK bisa ditambah paksa;
+  //     bot akan mengirim LINK undangan ke DM mereka (modeGagalPrivasi).
+  "undangan": {
+    "aktif": true,
+
+    // File berisi daftar nomor (satu per baris). Boleh +62.., 62.., atau 08..
+    // MODE 2-GRUP OTOMATIS: pakai file gabungan semua nomor. Bot isi grup 1
+    // sampai "batasAnggotaPerGrup", lalu otomatis lanjut ke grup 2.
+    "fileNomor": "data/nomor-semua.txt",
+
+    // ID grup tujuan (ambil dengan: npm run groups). Isi urut sesuai prioritas.
+    // Contoh: "grupTujuan": ["120363XXXXXXXXXXXXX@g.us"]
+    "grupTujuan": [],
+
+    // Batas anggota per grup sebelum pindah ke grup berikutnya (headroom dari 1024).
+    // 640 = grup 1 dapat ~639, grup 2 sisanya ~639 (seimbang). SYARAT: grup masih
+    // baru (isinya cuma bot). Kalau grup sudah ada isinya, naikkan sesuai kebutuhan.
+    "batasAnggotaPerGrup": 640,
+
+    // Acak urutan nomor supaya polanya tidak terlihat berurutan (mirip manusia).
+    "acakUrutan": true,
+
+    // Apa yang dilakukan kalau nomor tidak bisa ditambah paksa (privasi/403):
+    //   "kirimLink"     -> kirim link chat.whatsapp.com ke DM mereka (default)
+    //   "undanganNatif" -> kirim kartu undangan grup (fallback ke link kalau gagal)
+    //   "lewati"        -> lewati saja, tidak mengirim apa pun (paling aman dari lapor spam)
+    "modeGagalPrivasi": "kirimLink",
+
+    "pesanUndangan": "Halo 👋\n\nKamu diundang gabung grup marketplace kami (jual-beli digital, promo & rekber):\n{{link}}\n\nKalau tidak berminat, abaikan pesan ini ya 🙏",
+
+    // Pra-cek registrasi SEMUA nomor sekaligus di awal (1 panggilan utk banyak
+    // nomor, bukan 1 per nomor). Mempercepat drastis & tanpa risiko blokir.
+    "pracekTerdaftar": true,
+    "ukuranPracek": 200,
+
+    // Tambah beberapa nomor sekaligus dalam satu aksi. 1 = paling aman.
+    // 2-3 = lebih cepat & tetap wajar, PALING AMAN kalau nomor sudah jadi kontak
+    // bot (import dulu file .vcf). Jangan lebih dari 3-4 untuk nomor non-kontak.
+    "tambahSekaligus": 2,
+
+    // ---- TEMPO ANTI-SPAM (semakin lambat semakin aman) ----
+    // antarNomorDetik = jeda dasar; jitterDetik = tambahan acak (jadi ~25-45 detik).
+    // Tiap "istirahatSetiap" aksi, bot istirahat "istirahatMenit" (+ acak) menit.
+    // Jeda HANYA berlaku setelah aksi nyata; nomor mati/sudah-anggota dilewati cepat.
+    "jeda": {
+      "antarNomorDetik": 25,
+      "jitterDetik": 20,
+      "istirahatSetiap": 25,
+      "istirahatMenit": 5,
+      "istirahatJitterMenit": 5
+    },
+
+    // Batas aksi per hari (tambah berhasil + undangan terkirim).
+    // 150-200 = agresif (cepat, tapi risiko blokir lebih tinggi). WAJIB impor
+    // kontak .vcf dulu & pantau kesehatan nomor.
+    "batasHarian": 200,
+
+    // Pemanasan nomor: batas naik bertahap hari demi hari supaya tidak langsung
+    // 200 di hari pertama (paling rawan blokir). Kosongkan ([]) = langsung 200.
+    "pemanasan": [50, 100, 150, 200],
+
+    // Hanya bekerja di jam wajar (mengundang jam 3 pagi = terlihat robot).
+    "jamAktif": { "aktif": true, "mulai": "08:00", "selesai": "21:00" },
+
+    // Keamanan: berhenti kalau kena rate-limit / terlalu banyak gagal beruntun.
+    "berhentiSaatKenaLimit": true,
+    "maksGagalBeruntun": 8
   }
 }

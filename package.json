@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node src/index.js",
+    "invite": "node scripts/invite.js",
     "groups": "node scripts/list-groups.js",
     "session:export": "node scripts/session-export.js",
     "session:reset": "node scripts/session-reset.js",

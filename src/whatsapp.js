@@ -549,6 +549,176 @@ class WhatsAppClient extends EventEmitter {
     const hasil = await this.sock.sendMessage(jid, payload);
     return hasil;
   }
+
+  // ------------------------------------------------------------------
+  //  Undang anggota ke grup (dipakai oleh src/invite.js)
+  // ------------------------------------------------------------------
+
+  /** Ubah "6281..." jadi JID kontak WhatsApp. */
+  static jidNomor(nomor) {
+    const d = String(nomor || '').replace(/[^0-9]/g, '');
+    return d ? `${d}@s.whatsapp.net` : null;
+  }
+
+  /**
+   * Cek apakah sebuah nomor benar-benar terdaftar di WhatsApp.
+   * @returns {Promise<string|null>} JID resmi (kadang beda dari input) atau null.
+   */
+  async cekTerdaftar(nomor) {
+    if (!this.connected) throw new Error('Bot belum terhubung ke WhatsApp');
+    const jid = WhatsAppClient.jidNomor(nomor);
+    if (!jid) return null;
+    try {
+      const hasil = await this.sock.onWhatsApp(jid);
+      const item = Array.isArray(hasil) ? hasil[0] : null;
+      return item && item.exists ? item.jid : null;
+    } catch (e) {
+      // Jangan matikan siklus karena satu pengecekan gagal.
+      logger.debug({ err: e.message, nomor }, 'onWhatsApp gagal');
+      return undefined; // undefined = tidak yakin (beda dari null = pasti tidak ada)
+    }
+  }
+
+  /**
+   * Cek BANYAK nomor sekaligus (jauh lebih cepat: 1 panggilan untuk banyak nomor,
+   * bukan 1 panggilan per nomor). Dipakai untuk pra-cek sebelum loop undang.
+   * @param {string[]} nomorList
+   * @returns {Promise<Map<string, string|null>>} peta digit-nomor -> JID (atau null jika tidak terdaftar).
+   *   Nomor yang TIDAK ada di peta = tidak yakin (biar dicek satuan lagi).
+   */
+  async cekTerdaftarBanyak(nomorList) {
+    if (!this.connected) throw new Error('Bot belum terhubung ke WhatsApp');
+    const peta = new Map();
+    const jids = [];
+    for (const nomor of nomorList) {
+      const jid = WhatsAppClient.jidNomor(nomor);
+      if (jid) jids.push(jid);
+    }
+    if (!jids.length) return peta;
+
+    let res;
+    try {
+      res = await this.sock.onWhatsApp(...jids);
+    } catch (e) {
+      logger.debug({ err: e.message }, 'onWhatsApp batch gagal — akan fallback cek satuan');
+      return peta; // kosong -> pemanggil cek satuan
+    }
+
+    const ditemukan = new Map(); // digit -> jid resmi
+    for (const item of res || []) {
+      if (item && item.exists && item.jid) {
+        const d = item.jid.split('@')[0].split(':')[0];
+        ditemukan.set(d, item.jid);
+      }
+    }
+    for (const nomor of nomorList) {
+      const d = String(nomor).replace(/[^0-9]/g, '');
+      if (!d) continue;
+      // ada di hasil = terdaftar; tidak ada = tidak terdaftar (null).
+      peta.set(d, ditemukan.has(d) ? ditemukan.get(d) : null);
+    }
+    return peta;
+  }
+
+  /** Ambil metadata grup (subject, participants, dll) + segarkan cache. */
+  async metadataGrup(grupJid, paksa = false) {
+    if (!this.connected) throw new Error('Bot belum terhubung ke WhatsApp');
+    if (!paksa) {
+      const hit = this.groupCache.get(grupJid);
+      if (hit && Date.now() - hit.ts < 60_000) return hit.data;
+    }
+    const data = await this.sock.groupMetadata(grupJid);
+    this.groupCache.set(grupJid, { data, ts: Date.now() });
+    return data;
+  }
+
+  /**
+   * Tambahkan satu nomor ke grup. Bot HARUS admin di grup itu.
+   * @returns {Promise<{status:string, jid:string, content?:any}>}
+   *   status "200" = berhasil ditambahkan langsung.
+   *   status "403" = tidak bisa ditambahkan (privasi) -> perlu kirim link undangan.
+   *   status "409" = sudah jadi anggota.
+   *   status "408" = baru saja keluar, belum boleh ditambahkan lagi.
+   *   status "401" = memblokir / tidak diizinkan.
+   */
+  async tambahKeGrup(grupJid, jid) {
+    if (!this.connected) throw new Error('Bot belum terhubung ke WhatsApp');
+    const hasil = await this.sock.groupParticipantsUpdate(grupJid, [jid], 'add');
+    const item = Array.isArray(hasil) ? hasil.find((h) => h.jid === jid) || hasil[0] : null;
+    // Baileys memakai properti .status (string kode). Samakan bentuknya.
+    return {
+      status: String(item?.status ?? (item ? '200' : '000')),
+      jid: item?.jid || jid,
+      content: item?.content,
+    };
+  }
+
+  /**
+   * Tambahkan BEBERAPA nomor sekaligus dalam satu panggilan (lebih cepat).
+   * Menambahkan 2-3 orang sekaligus masih terlihat wajar (admin manusia sering
+   * begitu), tapi jangan terlalu banyak sekaligus.
+   * @param {string} grupJid
+   * @param {string[]} jids
+   * @returns {Promise<Map<string, {status:string, content?:any}>>} peta jid -> hasil.
+   */
+  async tambahBanyakKeGrup(grupJid, jids) {
+    if (!this.connected) throw new Error('Bot belum terhubung ke WhatsApp');
+    const hasil = await this.sock.groupParticipantsUpdate(grupJid, jids, 'add');
+    const peta = new Map();
+    for (const jid of jids) {
+      const item = Array.isArray(hasil) ? hasil.find((h) => h.jid === jid) : null;
+      peta.set(jid, {
+        // jid yang tidak muncul di balasan = tidak pasti -> "000" (dianggap perlu coba lagi).
+        status: String(item?.status ?? '000'),
+        content: item?.content,
+      });
+    }
+    return peta;
+  }
+
+  /** Ambil kode undangan grup ("chat.whatsapp.com/<kode>"). Bot harus admin. */
+  async kodeUndanganGrup(grupJid) {
+    if (!this.connected) throw new Error('Bot belum terhubung ke WhatsApp');
+    return this.sock.groupInviteCode(grupJid);
+  }
+
+  /**
+   * Kirim DM teks ke sebuah nomor/JID, dengan simulasi "sedang mengetik"
+   * supaya terlihat wajar (mengurangi kecurigaan spam).
+   */
+  async kirimDM(jid, teks, { tampilkanSedangMengetik = true } = {}) {
+    if (!this.connected) throw new Error('Bot belum terhubung ke WhatsApp');
+    if (tampilkanSedangMengetik) {
+      try {
+        await this.sock.presenceSubscribe(jid);
+        await delay(randInt(400, 900));
+        await this.sock.sendPresenceUpdate('composing', jid);
+        await delay(randInt(900, 2200));
+        await this.sock.sendPresenceUpdate('paused', jid);
+      } catch {
+        /* presence gagal bukan masalah fatal */
+      }
+    }
+    return this.sock.sendMessage(jid, { text: teks });
+  }
+
+  /**
+   * Kirim undangan grup "natif" (kartu join) ke sebuah JID. Lebih rapi daripada
+   * link teks, tapi bentuk API-nya beda antar versi Baileys — kalau gagal,
+   * pemanggil sebaiknya jatuh ke kirimDM(link).
+   */
+  async kirimUndanganNatif(jid, { grupJid, nama, kode, kadaluarsa, caption }) {
+    if (!this.connected) throw new Error('Bot belum terhubung ke WhatsApp');
+    return this.sock.sendMessage(jid, {
+      groupInvite: {
+        jid: grupJid,
+        name: nama || '',
+        caption: caption || '',
+        code: kode,
+        expiration: kadaluarsa || Math.floor(Date.now() / 1000) + 7 * 24 * 3600,
+      },
+    });
+  }
 }
 
 module.exports = { WhatsAppClient };
